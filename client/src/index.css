@@ -1,0 +1,9 @@
+/* CSS reset to prevent template overrides on Chakra UI */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}

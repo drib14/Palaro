@@ -1,0 +1,31 @@
+{
+  "name": "palaro",
+  "version": "1.0.0",
+  "description": "Palaro — Filipino Childhood Games Collection Platform",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && npm run dev",
+    "client": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "install:all": "npm install --legacy-peer-deps && cd server && npm install --legacy-peer-deps && cd ../client && npm install --legacy-peer-deps",
+    "seed": "cd server && npm run seed"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "palaro",
+    "filipino",
+    "games",
+    "childhood",
+    "philippines",
+    "mern"
+  ],
+  "author": "Palaro Team",
+  "license": "MIT"
+}
