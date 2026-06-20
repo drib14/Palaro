@@ -22,8 +22,8 @@ const useCharacterStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const res = await api.get('/characters/me');
-      if (res.data.success && res.data.character) {
-        set({ character: res.data.character, isLoading: false });
+      if (res.data.success && res.data.data?.character) {
+        set({ character: res.data.data.character, isLoading: false });
       } else {
         // Fallback default
         set({ character: { ...defaultCharacter }, isLoading: false });
@@ -39,7 +39,7 @@ const useCharacterStore = create((set, get) => ({
     try {
       const res = await api.put('/characters/me', customizationConfig);
       if (res.data.success) {
-        set({ character: res.data.character, isLoading: false });
+        set({ character: res.data.data?.character, isLoading: false });
         return { success: true };
       }
     } catch (err) {

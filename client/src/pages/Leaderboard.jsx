@@ -18,9 +18,11 @@ import {
   Select,
   HStack,
   VStack,
+  Stack,
 } from '@chakra-ui/react';
 import MainLayout from '../components/Layout/MainLayout';
 import api from '../services/api';
+import { getAvatarUrl } from '../utils/avatarHelper';
 
 const Leaderboard = () => {
   const [users, setUsers] = useState([]);
@@ -98,7 +100,7 @@ const Leaderboard = () => {
                       </Td>
                       <Td>
                         <HStack spacing={3}>
-                          <Avatar size="sm" name={userRecord.username} src={userRecord.avatar} />
+                          <Avatar size="sm" name={userRecord.username} src={getAvatarUrl(userRecord)} />
                           <Text fontWeight="bold">{userRecord.username}</Text>
                         </HStack>
                       </Td>

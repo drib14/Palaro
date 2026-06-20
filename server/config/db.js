@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { sanitizeSecret, sanitizeObject } = require('../utils/sanitize');
 
 const connectDB = async () => {
   try {
@@ -118,7 +119,7 @@ const connectDB = async () => {
     }
 
     mongoose.connection.on('error', (err) => {
-      console.error('❌ MongoDB connection error:', err);
+      console.error('❌ MongoDB connection error:', sanitizeObject(err));
     });
 
     mongoose.connection.on('disconnected', () => {
@@ -131,7 +132,7 @@ const connectDB = async () => {
 
     return conn;
   } catch (error) {
-    console.error('❌ MongoDB connection failed:', error.message);
+    console.error('❌ MongoDB connection failed:', sanitizeSecret(error.message));
     process.exit(1);
   }
 };

@@ -21,6 +21,8 @@ import {
   Circle,
   HStack,
   Center,
+  FormControl,
+  FormLabel,
 } from '@chakra-ui/react';
 import MainLayout from '../components/Layout/MainLayout';
 import CharacterRenderer from '../components/Character/CharacterRenderer';

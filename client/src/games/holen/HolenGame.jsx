@@ -17,9 +17,11 @@ import {
 } from '@chakra-ui/react';
 import * as THREE from 'three';
 import useGame from '../../hooks/useGame';
+import useCharacter from '../../hooks/useCharacter';
+import Character3D from '../../components/Character/Character3D';
 
 // 3D Scene Game Engine Component (Runs inside <Canvas>)
-const HolenSimulation = ({ isPlaying, onScoreUpdate, onGameOver, onShootCountUpdate }) => {
+const HolenSimulation = ({ isPlaying, onScoreUpdate, onGameOver, onShootCountUpdate, character }) => {
   const ringRadius = 5;
   const marbleRadius = 0.25;
   const numMarbles = 6;
@@ -28,6 +30,7 @@ const HolenSimulation = ({ isPlaying, onScoreUpdate, onGameOver, onShootCountUpd
   // Game state refs
   const shooterRef = useRef();
   const marblesRef = useRef([]);
+  const charGroupRef = useRef();
   const gameState = useRef({
     shooter: { x: 0, z: ringRadius - 1.2, vx: 0, vz: 0, active: true },
     marbles: [], // { id, x, z, vx, vz, active }
@@ -97,6 +100,20 @@ const HolenSimulation = ({ isPlaying, onScoreUpdate, onGameOver, onShootCountUpd
     if (!isPlaying) return;
 
     const state = gameState.current;
+
+    // Update 3D Character position/rotation behind shooter
+    if (charGroupRef.current) {
+      const s = state.shooter;
+      const aim = state.aimAngle;
+      const distBehind = 0.85;
+      charGroupRef.current.position.set(
+        s.x - Math.cos(aim) * distBehind,
+        0.35,
+        s.z - Math.sin(aim) * distBehind
+      );
+      charGroupRef.current.rotation.y = -aim + Math.PI / 2;
+    }
+
     let anyMoving = false;
 
     // 1. Move Shooter
@@ -307,12 +324,20 @@ const HolenSimulation = ({ isPlaying, onScoreUpdate, onGameOver, onShootCountUpd
           <meshBasicMaterial color="#F7B731" />
         </mesh>
       )}
+
+      {/* 3D Character aiming behind shooter */}
+      {isPlaying && gameState.current.shooter.active && !gameState.current.isRolling && (
+        <group ref={charGroupRef} position={[0, 0.35, ringRadius - 2.05]}>
+          <Character3D config={character} />
+        </group>
+      )}
     </group>
   );
 };
 
 const HolenGame = ({ mode, sessionId, gameSlug }) => {
   const { score, updateLocalScore, finishGame } = useGame(sessionId);
+  const { character } = useCharacter();
   const [isPlaying, setIsPlaying] = useState(false);
   const [localScore, setLocalScore] = useState(0);
   const [shotsLeft, setShotsLeft] = useState(5);
@@ -414,6 +439,7 @@ const HolenGame = ({ mode, sessionId, gameSlug }) => {
                 onScoreUpdate={handleScoreUpdate}
                 onGameOver={handleGameOver}
                 onShootCountUpdate={setShotsLeft}
+                character={character}
               />
               
               <OrbitControls

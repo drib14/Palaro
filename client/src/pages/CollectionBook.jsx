@@ -22,6 +22,7 @@ import {
   Textarea,
   useColorModeValue,
   Icon,
+  Center,
 } from '@chakra-ui/react';
 import { CheckCircleIcon } from '@chakra-ui/icons';
 import MainLayout from '../components/Layout/MainLayout';
@@ -65,7 +66,7 @@ const CollectionBook = () => {
     try {
       const res = await api.get(`/memories?gameSlug=${game.slug}`);
       if (res.data.success) {
-        setMemories(res.data.memories);
+        setMemories(res.data.data?.memories || []);
       }
     } catch (err) {
       console.warn('Failed to load memories for game');
@@ -122,8 +123,8 @@ const CollectionBook = () => {
         gameId: selectedGame._id,
         content: newMemory.trim(),
       });
-      if (res.data.success) {
-        setMemories([res.data.memory, ...memories]);
+      if (res.data.success && res.data.data?.memory) {
+        setMemories([res.data.data.memory, ...memories]);
         setNewMemory('');
         toast({
           title: 'Memory Wall updated!',
@@ -147,17 +148,17 @@ const CollectionBook = () => {
   const handleToggleLike = async (memoryId) => {
     try {
       const res = await api.post(`/memories/${memoryId}/like`);
-      if (res.data.success) {
+      if (res.data.success && res.data.data) {
         // Toggle in state
         setMemories(
           memories.map((m) =>
             m._id === memoryId
               ? {
                   ...m,
-                  likes: res.data.liked
-                    ? [...m.likes, 'userIdStub'] // Mock update count
-                    : m.likes.filter((id) => id !== 'userIdStub'),
-                  likeCount: res.data.likeCount,
+                  likes: res.data.data.liked
+                    ? [...(m.likes || []), 'userIdStub'] // Mock update count
+                    : (m.likes || []).filter((id) => id !== 'userIdStub'),
+                  likeCount: res.data.data.likeCount,
                 }
               : m
           )

@@ -17,10 +17,12 @@ import {
   SimpleGrid,
   Progress,
   Avatar,
+  Flex,
 } from '@chakra-ui/react';
 import MainLayout from '../components/Layout/MainLayout';
 import api from '../services/api';
 import useAuth from '../hooks/useAuth';
+import { getAvatarUrl } from '../utils/avatarHelper';
 
 const FamilyDashboard = () => {
   const { user } = useAuth();
@@ -242,7 +244,7 @@ const FamilyDashboard = () => {
                   {/* Parent creator */}
                   <HStack justify="space-between">
                     <HStack>
-                      <Avatar size="sm" name={family.parent?.username} />
+                      <Avatar size="sm" name={family.parent?.username} src={getAvatarUrl(family.parent)} />
                       <VStack align="start" spacing={0}>
                         <Text fontWeight="bold">{family.parent?.username}</Text>
                         <Badge colorScheme="purple">Magulang (Parent)</Badge>
@@ -258,7 +260,7 @@ const FamilyDashboard = () => {
                     family.children.map((child) => (
                       <HStack key={child.userId?._id} justify="space-between">
                         <HStack>
-                          <Avatar size="sm" name={child.userId?.username} />
+                          <Avatar size="sm" name={child.userId?.username} src={getAvatarUrl(child.userId)} />
                           <VStack align="start" spacing={0}>
                             <Text fontWeight="bold">{child.userId?.username}</Text>
                             <Badge colorScheme="teal">Anak (Child)</Badge>

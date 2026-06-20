@@ -11,6 +11,9 @@ import {
   CardBody,
   useToast,
   Center,
+  Stack,
+  SimpleGrid,
+  Badge,
 } from '@chakra-ui/react';
 import MainLayout from '../components/Layout/MainLayout';
 import useSocket from '../hooks/useSocket';
@@ -157,43 +160,76 @@ const VirtualPlayground = () => {
       ctx.strokeStyle = '#FFFFFF';
       ctx.strokeRect(100, 100, 400, 200);
 
+      const draw2DChar = (x, y, isLocal, config) => {
+        let resolvedSkin = '#FFD1A9';
+        if (config?.skinTone) {
+          if (config.skinTone.startsWith('#')) resolvedSkin = config.skinTone;
+          else if (config.skinTone === 'light') resolvedSkin = '#FFD1A9';
+          else if (config.skinTone === 'medium') resolvedSkin = '#E0A96D';
+          else if (config.skinTone === 'tan') resolvedSkin = '#C68642';
+          else if (config.skinTone === 'brown') resolvedSkin = '#8D5524';
+          else if (config.skinTone === 'dark') resolvedSkin = '#5C3818';
+        }
+        
+        const headColor = resolvedSkin;
+        const shirtColor = config?.shirtColor || (isLocal ? '#F7B731' : '#E74C3C');
+        const pantsColor = config?.pantsColor || '#161B22';
+        const hairColor = config?.hairColor || '#000000';
+
+        // Draw body (torso)
+        ctx.fillStyle = shirtColor;
+        ctx.fillRect(x - 9, y - 5, 18, 14);
+
+        // Draw head
+        ctx.beginPath();
+        ctx.arc(x, y - 12, 7, 0, Math.PI * 2);
+        ctx.fillStyle = headColor;
+        ctx.fill();
+
+        // Draw hair
+        if (config?.hairstyle !== 'none') {
+          ctx.beginPath();
+          ctx.arc(x, y - 14, 6.2, Math.PI, 0);
+          ctx.fillStyle = hairColor;
+          ctx.fill();
+        }
+
+        // Draw pants
+        ctx.fillStyle = pantsColor;
+        ctx.fillRect(x - 9, y + 9, 18, 5);
+      };
+
       // Draw other players
       state.otherPlayers.forEach((p) => {
-        // Draw avatar circle marker
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
-        ctx.fillStyle = '#E74C3C'; // red circle for other players
-        ctx.fill();
+        // Draw 2D custom avatar
+        draw2DChar(p.x, p.y, false, p.character);
         ctx.fillStyle = '#FFFFFF';
         ctx.font = '10px Inter';
-        ctx.fillText(p.username, p.x - 20, p.y - 22);
+        ctx.fillText(p.username, p.x - 20, p.y - 24);
 
         // Render chat bubbles
         const bubble = activeSpeechBubbles[p.userId];
         if (bubble && bubble.expires > Date.now()) {
           ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(p.x - 40, p.y - 50, 80, 20);
+          ctx.fillRect(p.x - 40, p.y - 52, 80, 20);
           ctx.fillStyle = '#000000';
-          ctx.fillText(bubble.text, p.x - 35, p.y - 37);
+          ctx.fillText(bubble.text, p.x - 35, p.y - 39);
         }
       });
 
       // Draw Local Player
-      ctx.beginPath();
-      ctx.arc(state.localPlayer.x, state.localPlayer.y, 15, 0, Math.PI * 2);
-      ctx.fillStyle = '#F7B731'; // Gold circle for local player
-      ctx.fill();
+      draw2DChar(state.localPlayer.x, state.localPlayer.y, true, character);
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '10px Inter';
-      ctx.fillText(user?.username || 'You', state.localPlayer.x - 12, state.localPlayer.y - 22);
+      ctx.fillText(user?.username || 'You', state.localPlayer.x - 12, state.localPlayer.y - 24);
 
       // Render local bubble
       const localBubble = activeSpeechBubbles[user?._id];
       if (localBubble && localBubble.expires > Date.now()) {
         ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(state.localPlayer.x - 40, state.localPlayer.y - 50, 80, 20);
+        ctx.fillRect(state.localPlayer.x - 40, state.localPlayer.y - 52, 80, 20);
         ctx.fillStyle = '#000000';
-        ctx.fillText(localBubble.text, state.localPlayer.x - 35, state.localPlayer.y - 37);
+        ctx.fillText(localBubble.text, state.localPlayer.x - 35, state.localPlayer.y - 39);
       }
 
       animId = requestAnimationFrame(loop);

@@ -10,9 +10,11 @@ import {
   Center,
 } from '@chakra-ui/react';
 import useGame from '../../hooks/useGame';
+import useCharacter from '../../hooks/useCharacter';
 
 const SipaGame = ({ mode, sessionId, gameSlug }) => {
   const { score, updateLocalScore, finishGame } = useGame(sessionId);
+  const { character } = useCharacter();
   const canvasRef = useRef(null);
   
   const [isPlaying, setIsPlaying] = useState(false);
@@ -103,9 +105,13 @@ const SipaGame = ({ mode, sessionId, gameSlug }) => {
       ctx.fillStyle = '#4A5568';
       ctx.fillRect(0, 365, canvas.width, 35);
 
-      // Draw player shoe/foot indicator
-      ctx.fillStyle = f.active ? '#F7B731' : '#E74C3C';
-      ctx.fillRect(f.x - f.width/2, f.y, f.width, f.height);
+      // Draw player shoe/foot indicator (stylized using custom shoesColor and shirtColor)
+      const primaryColor = character?.shoesColor || '#E74C3C';
+      const secondaryColor = character?.shirtColor || '#1A73E8';
+      ctx.fillStyle = f.active ? '#F7B731' : primaryColor;
+      ctx.fillRect(f.x - f.width/2, f.y, f.width, f.height - 4);
+      ctx.fillStyle = secondaryColor;
+      ctx.fillRect(f.x - f.width/2, f.y + f.height - 4, f.width, 4);
 
       // Draw Sipa Washer (metal circle + colorful plastic ribbons)
       // Draw colorful ribbons

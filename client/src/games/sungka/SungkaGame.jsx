@@ -17,7 +17,7 @@ import useAuth from '../../hooks/useAuth';
 
 const SungkaGame = ({ mode, sessionId, gameSlug }) => {
   const { user } = useAuth();
-  const { score, opponentScore, updateLocalScore, sendGameAction, activeSession, finishGame } = useGame(sessionId);
+  const { socket, score, opponentScore, updateLocalScore, sendGameAction, activeSession, finishGame } = useGame(sessionId);
   const toast = useToast();
 
   // Board state:
@@ -43,17 +43,19 @@ const SungkaGame = ({ mode, sessionId, gameSlug }) => {
 
   // Handle opponent move in PVP
   useEffect(() => {
-    if (mode === 'pvp') {
+    if (mode === 'pvp' && socket) {
       const handleAction = ({ action, data }) => {
         if (action === 'sungka_move') {
           simulateSowing(data.pitIndex, false);
         }
       };
       
-      // Let's hook it up using standard game:action listener from useGame if available
-      // Or we can register a custom listener on the socket directly
+      socket.on('game:action', handleAction);
+      return () => {
+        socket.off('game:action', handleAction);
+      };
     }
-  }, [mode]);
+  }, [mode, socket]);
 
   // Check game over
   useEffect(() => {

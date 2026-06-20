@@ -23,6 +23,7 @@ import { SunIcon, MoonIcon } from '@chakra-ui/icons';
 import { LucideGamepad2, LucideUsers, LucideHistory, LucideTrophy, LucideHome } from 'lucide-react';
 import useAuth from '../../hooks/useAuth';
 import useLanguageStore from '../../store/languageStore';
+import { getAvatarUrl } from '../../utils/avatarHelper';
 
 const Navbar = () => {
   const { colorMode, toggleColorMode } = useColorMode();
@@ -173,7 +174,7 @@ const Navbar = () => {
                     <Avatar
                       size="md"
                       name={user.username}
-                      src={user.avatar || 'https://bit.ly/broken-link'}
+                      src={getAvatarUrl(user)}
                       border="2px solid"
                       borderColor="brand.gold"
                     />

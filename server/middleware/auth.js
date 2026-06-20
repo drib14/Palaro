@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || 'fallback-access-secret';
+const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 // Verify JWT access token
 const authenticate = async (req, res, next) => {

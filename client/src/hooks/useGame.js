@@ -18,8 +18,10 @@ const useGame = (sessionId) => {
     submitGameResult,
   } = useGameStore();
 
+  const isLocal = !sessionId || sessionId === 'pvc-session' || sessionId.length !== 24;
+
   useEffect(() => {
-    if (!socket || !sessionId) return;
+    if (!socket || isLocal) return;
 
     // Join the game session room
     socket.emit('game:join_session', { sessionId });
@@ -57,23 +59,23 @@ const useGame = (sessionId) => {
       socket.off('game:player_joined');
       socket.off('game:score_updated');
     };
-  }, [socket, sessionId, activeSession, setActiveSession, setOpponent, updateOpponentScore]);
+  }, [socket, sessionId, isLocal, activeSession, setActiveSession, setOpponent, updateOpponentScore]);
 
   const sendGameAction = (action, data) => {
-    if (socket && sessionId) {
+    if (socket && !isLocal) {
       socket.emit('game:action', { sessionId, action, data });
     }
   };
 
   const updateLocalScore = (newScore) => {
     updateScore(newScore);
-    if (socket && sessionId) {
+    if (socket && !isLocal) {
       socket.emit('game:update_score', { sessionId, score: newScore });
     }
   };
 
   const finishGame = (finalScore, winnerId) => {
-    if (socket && sessionId) {
+    if (socket && !isLocal) {
       socket.emit('game:finish', {
         sessionId,
         finalScores: [
@@ -86,6 +88,7 @@ const useGame = (sessionId) => {
   };
 
   return {
+    socket,
     activeSession,
     matchmakingStatus,
     opponent,

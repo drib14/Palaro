@@ -24,8 +24,8 @@ const useAuthStore = create((set, get) => ({
     try {
       const res = await api.post('/auth/register', userData);
       if (res.data.success) {
-        get().setToken(res.data.accessToken);
-        set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+        get().setToken(res.data.data?.accessToken);
+        set({ user: res.data.data?.user, isAuthenticated: true, isLoading: false });
         return { success: true };
       }
     } catch (err) {
@@ -40,8 +40,8 @@ const useAuthStore = create((set, get) => ({
     try {
       const res = await api.post('/auth/login', { identifier, password });
       if (res.data.success) {
-        get().setToken(res.data.accessToken);
-        set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+        get().setToken(res.data.data?.accessToken);
+        set({ user: res.data.data?.user, isAuthenticated: true, isLoading: false });
         return { success: true };
       }
     } catch (err) {
@@ -71,9 +71,9 @@ const useAuthStore = create((set, get) => ({
 
     set({ isLoading: true });
     try {
-      const res = await api.get('/users/profile');
+      const res = await api.get('/auth/me');
       if (res.data.success) {
-        set({ user: res.data.user, isAuthenticated: true, isLoading: false });
+        set({ user: res.data.data?.user, isAuthenticated: true, isLoading: false });
       }
     } catch (err) {
       console.warn('CheckAuth profile call failed, clearing token states');
@@ -86,7 +86,7 @@ const useAuthStore = create((set, get) => ({
     try {
       const res = await api.put('/users/profile', profileData);
       if (res.data.success) {
-        set({ user: res.data.user });
+        set({ user: res.data.data?.user });
         return { success: true };
       }
     } catch (err) {

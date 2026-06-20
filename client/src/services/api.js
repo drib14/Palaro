@@ -38,8 +38,8 @@ api.interceptors.response.use(
         // Attempt to fetch new access token using refresh token cookie
         const res = await axios.post(`${API_URL}/auth/refresh`, {}, { withCredentials: true });
         
-        if (res.data.success && res.data.accessToken) {
-          const newToken = res.data.accessToken;
+        if (res.data.success && res.data.data?.accessToken) {
+          const newToken = res.data.data.accessToken;
           localStorage.setItem('palaro_token', newToken);
           originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
           

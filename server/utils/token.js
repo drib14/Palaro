@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET || 'fallback-access-secret';
-const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET || 'fallback-refresh-secret';
+const ACCESS_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 const generateAccessToken = (user) => {
   return jwt.sign(

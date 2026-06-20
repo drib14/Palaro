@@ -10,9 +10,11 @@ import {
   Center,
 } from '@chakra-ui/react';
 import useGame from '../../hooks/useGame';
+import useCharacter from '../../hooks/useCharacter';
 
 const PatinteroGame = ({ mode, sessionId, gameSlug }) => {
   const { score, updateLocalScore, finishGame } = useGame(sessionId);
+  const { character } = useCharacter();
   const canvasRef = useRef(null);
 
   const [isPlaying, setIsPlaying] = useState(false);
@@ -149,25 +151,51 @@ const PatinteroGame = ({ mode, sessionId, gameSlug }) => {
       ctx.lineTo(canvas.width / 2, canvas.height - 20);
       ctx.stroke();
 
+      const draw2DChar = (x, y, isPlayer, config) => {
+        // Resolve colors
+        let resolvedSkin = '#FFD1A9';
+        if (config?.skinTone) {
+          if (config.skinTone.startsWith('#')) resolvedSkin = config.skinTone;
+          else if (config.skinTone === 'light') resolvedSkin = '#FFD1A9';
+          else if (config.skinTone === 'medium') resolvedSkin = '#E0A96D';
+          else if (config.skinTone === 'tan') resolvedSkin = '#C68642';
+          else if (config.skinTone === 'brown') resolvedSkin = '#8D5524';
+          else if (config.skinTone === 'dark') resolvedSkin = '#5C3818';
+        }
+        
+        const headColor = isPlayer ? resolvedSkin : '#E0A96D';
+        const shirtColor = isPlayer ? (config?.shirtColor || '#1A73E8') : '#E74C3C';
+        const pantsColor = isPlayer ? (config?.pantsColor || '#161B22') : '#2C3E50';
+        const hairColor = isPlayer ? (config?.hairColor || '#000000') : '#3E2723';
+
+        // Draw body (torso)
+        ctx.fillStyle = shirtColor;
+        ctx.fillRect(x - 8, y - 4, 16, 12);
+
+        // Draw head
+        ctx.beginPath();
+        ctx.arc(x, y - 9, 6, 0, Math.PI * 2);
+        ctx.fillStyle = headColor;
+        ctx.fill();
+
+        // Draw hair
+        ctx.beginPath();
+        ctx.arc(x, y - 11, 5.2, Math.PI, 0);
+        ctx.fillStyle = hairColor;
+        ctx.fill();
+
+        // Draw pants
+        ctx.fillStyle = pantsColor;
+        ctx.fillRect(x - 8, y + 8, 16, 4);
+      };
+
       // Draw Guards (patrollers)
       state.guards.forEach((guard) => {
-        ctx.beginPath();
-        ctx.arc(guard.x, guard.y, 14, 0, Math.PI * 2);
-        ctx.fillStyle = '#E74C3C'; // Red represents opponents
-        ctx.fill();
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        draw2DChar(guard.x, guard.y, false, null);
       });
 
       // Draw Player Runner
-      ctx.beginPath();
-      ctx.arc(state.player.x, state.player.y, state.player.radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#1A73E8'; // Blue represents player
-      ctx.fill();
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = 2;
-      ctx.stroke();
+      draw2DChar(state.player.x, state.player.y, true, character);
 
       if (isPlaying) {
         animId = requestAnimationFrame(gameLoop);

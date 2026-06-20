@@ -19,7 +19,7 @@ const initializeSocket = (httpServer) => {
     if (token) {
       try {
         const jwt = require('jsonwebtoken');
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'fallback-access-secret');
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
         socket.userId = decoded.userId;
         socket.username = decoded.username;
         next();

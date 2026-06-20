@@ -14,7 +14,7 @@ const getFamilyGroup = async (req, res, next) => {
         { 'children.userId': req.user._id }
       ]
     })
-    .populate('parent', 'username avatar level')
+    .populate('parent', 'username avatar level gender')
     .populate('children.userId', 'username firstName lastName avatar level gender');
 
     if (!family) {

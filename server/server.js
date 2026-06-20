@@ -1,4 +1,14 @@
 require('dotenv').config();
+
+// Validate required environment secrets on startup
+const requiredSecrets = ['ACCESS_TOKEN_SECRET', 'REFRESH_TOKEN_SECRET'];
+for (const secret of requiredSecrets) {
+  if (!process.env[secret]) {
+    console.error(`❌ CRITICAL CONFIG ERROR: Missing required environment variable: ${secret}`);
+    process.exit(1);
+  }
+}
+
 const express = require('express');
 const http = require('http');
 const cors = require('cors');

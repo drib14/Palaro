@@ -43,7 +43,7 @@ const Dashboard = () => {
     const getChallenges = async () => {
       try {
         const res = await api.get('/challenges/active');
-        if (res.data.success) setChallenges(res.data.challenges);
+        if (res.data.success) setChallenges(res.data.challenges || []);
       } catch (err) {
         console.warn('Failed to load active challenges');
       }
@@ -53,7 +53,7 @@ const Dashboard = () => {
     const getMemories = async () => {
       try {
         const res = await api.get('/memories?limit=3');
-        if (res.data.success) setRecentMemories(res.data.memories);
+        if (res.data.success) setRecentMemories(res.data.data?.memories || []);
       } catch (err) {
         console.warn('Failed to load recent memories');
       }
@@ -63,7 +63,7 @@ const Dashboard = () => {
     const getStats = async () => {
       try {
         const res = await api.get('/collection');
-        if (res.data.success && res.data.entries) {
+        if (res.data.success && Array.isArray(res.data.entries)) {
           const played = res.data.entries.reduce((acc, curr) => acc + curr.totalTimesPlayed, 0);
           setStats({ gamesPlayed: played, totalWins: Math.floor(played * 0.45) }); // mock wins ratio from played
         }

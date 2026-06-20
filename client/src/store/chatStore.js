@@ -39,8 +39,8 @@ const useChatStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await api.get(`/chat/${room}`);
-      if (res.data.success) {
-        set({ messages: res.data.messages, isLoading: false });
+      if (res.data.success && res.data.data?.messages) {
+        set({ messages: res.data.data.messages, isLoading: false });
       }
     } catch (err) {
       console.error('Failed to load chat messages:', err);

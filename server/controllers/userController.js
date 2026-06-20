@@ -48,7 +48,7 @@ const getLeaderboard = async (req, res, next) => {
       .sort({ [sortField]: -1 })
       .limit(Number(limit))
       .skip((Number(page) - 1) * Number(limit))
-      .select('username avatar level xp totalGamesPlayed totalWins nostalgiaTier province');
+      .select('username avatar level xp totalGamesPlayed totalWins nostalgiaTier province gender');
 
     const total = await User.countDocuments();
 
@@ -75,7 +75,7 @@ const searchUsers = async (req, res, next) => {
       username: { $regex: q, $options: 'i' },
     })
       .limit(20)
-      .select('username avatar level nostalgiaTier province isOnline');
+      .select('username avatar level nostalgiaTier province isOnline gender');
 
     res.json({ success: true, data: { users } });
   } catch (error) {

@@ -231,27 +231,34 @@ const refreshAccessToken = async (req, res, next) => {
       });
     }
 
-    // Check if user has this refresh token
-    const user = await User.findOne({
-      _id: decoded.userId,
-      'refreshTokens.token': refreshToken,
-    });
+    // Generate new refresh token to prepare for replacement
+    const tempUser = { _id: decoded.userId };
+    const newRefreshToken = generateRefreshToken(tempUser);
+
+    // Atomically replace old refresh token with new refresh token in database
+    const user = await User.findOneAndUpdate(
+      {
+        _id: decoded.userId,
+        'refreshTokens.token': refreshToken,
+      },
+      {
+        $set: {
+          'refreshTokens.$.token': newRefreshToken,
+          'refreshTokens.$.createdAt': new Date(),
+        },
+      },
+      { new: true, runValidators: false }
+    );
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'Refresh token not found.',
+        message: 'Refresh token not found or already rotated.',
       });
     }
 
-    // Generate new tokens
+    // Generate new access token
     const newAccessToken = generateAccessToken(user);
-    const newRefreshToken = generateRefreshToken(user);
-
-    // Replace old refresh token
-    user.refreshTokens = user.refreshTokens.filter((rt) => rt.token !== refreshToken);
-    user.refreshTokens.push({ token: newRefreshToken });
-    await user.save({ validateBeforeSave: false });
 
     // Set new refresh token cookie
     res.cookie('refreshToken', newRefreshToken, {

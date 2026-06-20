@@ -19,6 +19,7 @@ import MainLayout from '../components/Layout/MainLayout';
 import useSocket from '../hooks/useSocket';
 import useAuth from '../hooks/useAuth';
 import useGameStore from '../store/gameStore';
+import { getAvatarUrl } from '../utils/avatarHelper';
 
 // Game component imports
 import SungkaGame from '../games/sungka/SungkaGame';
@@ -26,6 +27,10 @@ import PatinteroGame from '../games/patintero/PatinteroGame';
 import TeksGame from '../games/teks/TeksGame';
 import SipaGame from '../games/sipa/SipaGame';
 import HolenGame from '../games/holen/HolenGame';
+import Taguan3DGame from '../games/taguan-3d/Taguan3DGame';
+import AgawanBaseGame from '../games/agawan-base/AgawanBaseGame';
+import TrumpoGame from '../games/trumpo/TrumpoGame';
+import JackstoneGame from '../games/jackstone/JackstoneGame';
 
 const GamePlay = () => {
   const { gameSlug } = useParams();
@@ -157,6 +162,14 @@ const GamePlay = () => {
         return <SipaGame {...props} />;
       case 'holen':
         return <HolenGame {...props} />;
+      case 'taguan-3d':
+        return <Taguan3DGame {...props} />;
+      case 'agawan-base':
+        return <AgawanBaseGame {...props} />;
+      case 'trumpo':
+        return <TrumpoGame {...props} />;
+      case 'jackstone':
+        return <JackstoneGame {...props} />;
       default:
         // Fallback placeholder/generic play component
         return (
@@ -203,7 +216,7 @@ const GamePlay = () => {
               </Heading>
               <HStack spacing={12} align="center">
                 <VStack>
-                  <Avatar size="xl" name={user?.username} border="3px solid" borderColor="brand.gold" />
+                  <Avatar size="xl" name={user?.username} src={getAvatarUrl(user)} border="3px solid" borderColor="brand.gold" />
                   <Text fontWeight="bold">{user?.username}</Text>
                   <Badge colorScheme="yellow">Level {user?.level}</Badge>
                 </VStack>
@@ -211,7 +224,7 @@ const GamePlay = () => {
                   VS
                 </Text>
                 <VStack>
-                  <Avatar size="xl" name={opponent?.username || 'Kalaro'} border="3px solid" borderColor="brand.blue" />
+                  <Avatar size="xl" name={opponent?.username || 'Kalaro'} src={getAvatarUrl(opponent)} border="3px solid" borderColor="brand.blue" />
                   <Text fontWeight="bold">{opponent?.username || 'Kalaro'}</Text>
                   <Badge colorScheme="blue">Level 1</Badge>
                 </VStack>

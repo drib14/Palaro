@@ -14,8 +14,8 @@ const useGameStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const res = await api.get('/games');
-      if (res.data.success) {
-        set({ games: res.data.games, isLoading: false });
+      if (res.data.success && res.data.data?.games) {
+        set({ games: res.data.data.games, isLoading: false });
       }
     } catch (err) {
       console.error('Failed to load games list:', err);

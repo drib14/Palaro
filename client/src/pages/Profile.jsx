@@ -12,6 +12,7 @@ import {
   Progress,
   Badge,
   HStack,
+  VStack,
   Avatar,
   Divider,
   Icon,

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const GameSession = require('../models/GameSession');
 const User = require('../models/User');
 const CollectionEntry = require('../models/CollectionEntry');
@@ -7,6 +8,9 @@ const registerGameHandlers = (io, socket, connectedUsers) => {
   // Join game session room
   socket.on('game:join_session', async ({ sessionId }) => {
     try {
+      if (!sessionId || !mongoose.Types.ObjectId.isValid(sessionId)) {
+        return socket.emit('game:error', 'Invalid game session ID');
+      }
       const session = await GameSession.findById(sessionId);
       if (!session) {
         return socket.emit('game:error', 'Game session not found');
@@ -43,6 +47,9 @@ const registerGameHandlers = (io, socket, connectedUsers) => {
   // Handle score updates
   socket.on('game:update_score', async ({ sessionId, score }) => {
     try {
+      if (!sessionId || !mongoose.Types.ObjectId.isValid(sessionId)) {
+        return;
+      }
       const session = await GameSession.findById(sessionId);
       if (!session) return;
 
@@ -65,6 +72,12 @@ const registerGameHandlers = (io, socket, connectedUsers) => {
   // End game session
   socket.on('game:finish', async ({ sessionId, finalScores, winnerId }) => {
     try {
+      if (!sessionId || !mongoose.Types.ObjectId.isValid(sessionId)) {
+        return socket.emit('game:error', 'Invalid game session ID');
+      }
+      if (winnerId && !mongoose.Types.ObjectId.isValid(winnerId)) {
+        winnerId = null;
+      }
       const session = await GameSession.findById(sessionId);
       if (!session || session.status === 'completed') return;
 
